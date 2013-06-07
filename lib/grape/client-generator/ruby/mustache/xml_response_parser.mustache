@@ -1,0 +1,69 @@
+# encoding: UTF-8
+
+require "rexml/document"
+
+module {{namespace}}
+  class XmlResponseParser
+
+    class << self
+      def parse(xml_text)
+        doc = REXML::Document.new(xml_text)
+        name = doc.root.name == "error" ? "error" : "response"
+        { name => parse_element(doc.root) }
+      end
+
+      private
+
+      def parse_element(element)
+        case element
+          when REXML::Element
+            recursive_types = ["hash", "array"]
+            index = recursive_types.index(element.name)
+            index ||= recursive_types.index(element.attributes["type"])
+
+            if index
+              send(:"parse_#{recursive_types[index]}", element)
+            else
+              if element.children.any? { |child| child.is_a?(REXML::Element) }
+                parse_hash(element)
+              else
+                element.text
+              end
+            end
+          when REXML::Text
+            element.value
+        end
+      end
+
+      def parse_hash(element)
+        element.children.inject({}) do |ret, child|
+          if child.is_a?(REXML::Element)
+            key = format_key(child.name)
+            ret[key] = hash_attributes(child.attributes).merge({
+              "value" => parse_element(child)
+            })
+          end
+
+          ret
+        end
+      end
+
+      def hash_attributes(attrs)
+        attrs.inject({}) { |ret, arr| ret[format_key(arr[0])] = arr[1]; ret }
+      end
+
+      def format_key(key)
+        key.gsub("-", "_")
+      end
+
+      def parse_array(element)
+        element.children.map do |child|
+          if child.is_a?(REXML::Element)
+            parse_element(child)
+          end
+        end.compact
+      end
+    end
+
+  end
+end

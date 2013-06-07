@@ -1,0 +1,16 @@
+# encoding: UTF-8
+
+# only require this file if you have the json gem available
+require "json"
+
+module {{namespace}}
+  class JsonResponseParser
+
+    class << self
+      def parse(json_text)
+        JSON.parse(json_text)
+      end
+    end
+
+  end
+end

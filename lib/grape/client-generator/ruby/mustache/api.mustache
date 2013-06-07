@@ -1,0 +1,81 @@
+# encoding: UTF-8
+
+require 'net/http'
+require 'cgi'
+
+module {{namespace}}
+  class {{class_name}}
+
+    attr_reader :base_url, :version, :format
+
+    def initialize(base_url, options = {})
+      @base_url = base_url
+      @version = options[:version] || "{{default_version}}"
+      @format = options[:format] || "{{default_format}}"
+    end
+
+  {{#endpoints}}
+    def {{name}}(params = {})
+      make_request("{{verb}}", "{{path}}", params)
+    end
+
+  {{/endpoints}}
+    private
+
+    def make_request(verb, path, params)
+      parse_response(
+        case verb
+          when "post"
+            url = make_post_url(path)
+            post(url, params)
+          when "get"
+            url = make_get_url(path, params)
+            get(url)
+          else
+            raise "Unsupported HTTP verb."
+        end
+      )
+    end
+
+    def parse_response(response)
+      send(:"parse_#{format}_response", response)
+    end
+
+    def parse_xml_response(response)
+      XmlResponseParser.parse(response)
+    end
+
+    def parse_json_response(response)
+      JsonResponseParser.parse(response)
+    end
+
+    def make_param_string(params)
+      (params.map do |key, val|
+        "#{CGI.escape(key.to_s)}=#{CGI.escape(val.to_s)}"
+      end).join("&")
+    end
+
+    def make_get_url(url, params)
+      File.join(base_url, version, "#{path}.#{format}", "?#{make_param_string(params)}")
+    end
+
+    def make_post_url(path)
+      File.join(base_url, version, "#{path}.#{format}")
+    end
+
+    def post(url, params)
+      uri = URI.parse(url)
+      http = Net::HTTP.new(uri.host, uri.port)
+      request = Net::HTTP::Post.new(uri.path)
+      request.body = make_param_string(params)
+      resp = http.request(request)
+      resp.body
+    end
+
+    def get(url)
+      resp = Net::HTTP.get_response(URI.parse(url))
+      resp.body
+    end
+
+  end
+end

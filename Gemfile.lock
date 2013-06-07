@@ -1,0 +1,70 @@
+PATH
+  remote: .
+  specs:
+    grape-client-generator (1.1.0)
+      mustache
+
+GEM
+  remote: https://rubygems.org/
+  specs:
+    activesupport (3.2.13)
+      i18n (= 0.6.1)
+      multi_json (~> 1.0)
+    backports (3.3.1)
+    builder (3.2.2)
+    coderay (1.0.9)
+    descendants_tracker (0.0.1)
+    diff-lcs (1.1.3)
+    grape (0.4.1)
+      activesupport
+      builder
+      hashie (>= 1.2.0)
+      multi_json (>= 1.3.2)
+      multi_xml (>= 0.5.2)
+      rack (>= 1.3.0)
+      rack-accept
+      rack-mount
+      virtus
+    hashie (2.0.5)
+    i18n (0.6.1)
+    method_source (0.8.1)
+    multi_json (1.7.6)
+    multi_xml (0.5.4)
+    mustache (0.99.4)
+    pry (0.9.12.2)
+      coderay (~> 1.0.5)
+      method_source (~> 0.8)
+      slop (~> 3.4)
+    pry-nav (0.2.3)
+      pry (~> 0.9.10)
+    rack (1.5.2)
+    rack-accept (0.4.5)
+      rack (>= 0.4)
+    rack-mount (0.8.3)
+      rack (>= 1.0.0)
+    rake (10.0.4)
+    rr (1.0.4)
+    rspec (2.11.0)
+      rspec-core (~> 2.11.0)
+      rspec-expectations (~> 2.11.0)
+      rspec-mocks (~> 2.11.0)
+    rspec-core (2.11.0)
+    rspec-expectations (2.11.1)
+      diff-lcs (~> 1.1.3)
+    rspec-mocks (2.11.1)
+    slop (3.4.5)
+    virtus (0.5.5)
+      backports (~> 3.3)
+      descendants_tracker (~> 0.0.1)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  grape
+  grape-client-generator!
+  pry
+  pry-nav
+  rake
+  rr (~> 1.0.4)
+  rspec (~> 2.11.0)
