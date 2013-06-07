@@ -14,7 +14,8 @@ module Grape
         end
 
         def render
-          ::Mustache.render(File.read(input_file), params)
+          Mustache.template_path = mustache_path
+          Mustache.render(File.read(input_file), params)
         end
 
         def input_file
@@ -32,7 +33,11 @@ module Grape
         protected
 
         def mustache_file_for(name)
-          File.join(File.dirname(__FILE__), "mustache", "#{name}.mustache")
+          File.join(mustache_path, "#{name}.mustache")
+        end
+
+        def mustache_path
+          File.join(File.dirname(__FILE__), "mustache")
         end
       end
 
