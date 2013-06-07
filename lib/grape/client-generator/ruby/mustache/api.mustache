@@ -55,7 +55,7 @@ module {{namespace}}
       end).join("&")
     end
 
-    def make_get_url(url, params)
+    def make_get_url(path, params)
       File.join(base_url, version, "#{path}.#{format}", "?#{make_param_string(params)}")
     end
 

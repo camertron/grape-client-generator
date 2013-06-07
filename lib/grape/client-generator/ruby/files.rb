@@ -50,6 +50,7 @@ module Grape
             :namespace => generator.namespace,
             :class_name => generator.class_name,
             :default_version => generator.default_version,
+            :default_format => generator.response_types.first,
             :endpoints => generator.map_endpoints do |endpoint|
               {
                 :path => endpoint.options[:path].first.to_s,
@@ -63,7 +64,7 @@ module Grape
 
       class XmlResponseParser < ClientFile
         def output_file_name
-          "xml_responses_parser.rb"
+          "xml_response_parser.rb"
         end
 
         def input_file
@@ -77,7 +78,7 @@ module Grape
 
       class JsonResponseParser < ClientFile
         def output_file_name
-          "json_responses_parser.rb"
+          "json_response_parser.rb"
         end
 
         def input_file

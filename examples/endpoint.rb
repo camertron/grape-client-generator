@@ -3,7 +3,7 @@ require 'grape/client_generator'
 
 class DummyEndpoints < Grape::API
 
-  desc "Enqueue a dummy job that logs the current date and time."
+  desc "I'm a little teapot."
 
   get :dummy do
     puts "hello"
