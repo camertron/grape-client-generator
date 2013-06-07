@@ -89,12 +89,81 @@ describe RubyGenerator do
     end
 
     describe "generated json response parser class" do
-      before(:each) do
-        @parser = @api_module::MyClient::JsonResponseParser
-      end
+      let(:parser) { @api_module::MyClient::JsonResponseParser }
 
-      it "parses a json response successfully" do
-        @parser.parse('{"hello": "world"}').should == { "hello" => "world" }
+      describe("#parse") do
+        it "parses a json response successfully" do
+          parser.parse('{"hello": "world"}').should == { "hello" => "world" }
+        end
+      end
+    end
+
+    describe "generated xml response parser class" do
+      let(:parser) { @api_module::MyClient::XmlResponseParser }
+
+      describe("#parse") do
+        it "uses 'error' as the root if given an error-ish response" do
+          response = %q(<error><message>jelly beans</message></error>)
+          parser.parse(response).should == {
+            "error" => {
+              "message" => {
+                "value" => "jelly beans"
+              }
+            }
+          }
+        end
+
+        it "handles a single-element hash response" do
+          response = %q(<hash><dumbledore>wizard</dumbledore></hash>)
+          parser.parse(response).should == {
+            "response" => {
+              "dumbledore" => {
+                "value" => "wizard"
+              }
+            }
+          }
+        end
+
+        it "handles an array response" do
+          response = %q(<strings type="array">)
+            response += %q(<string>gryffindor</string><string>hufflepuff</string>)
+            response += %q(<string>ravenclaw</string><string>slytherin</string>)
+          response += %q(</strings>)
+
+          parser.parse(response).should == {
+            "response" => ["gryffindor", "hufflepuff", "ravenclaw", "slytherin"]
+          }
+        end
+
+        it "handles a nested hash and array combination" do
+          response = %q(<hash>) +
+            %q(<houses type="array">) +
+              %q(<house>gryffindor</house>) +
+              %q(<house>hufflepuff</house>) +
+              %q(<house>ravenclaw</house>) +
+              %q(<house>slytherin</house>) +
+            %q(</houses>) +
+            %q(<friends type="array">) +
+              %q(<friend>moony</friend>) +
+              %q(<friend>wormtail</friend>) +
+              %q(<friend>padfoot</friend>) +
+              %q(<friend>prongs</friend>) +
+            %q(</friends>) +
+          %q(</hash>)
+
+          parser.parse(response).should == {
+            "response" => {
+              "houses" => {
+                "type" => "array",
+                "value" => ["gryffindor", "hufflepuff", "ravenclaw", "slytherin"]
+              },
+              "friends" => {
+                "type" => "array",
+                "value" => ["moony", "wormtail", "padfoot", "prongs"]
+              }
+            }
+          }
+        end
       end
     end
   end
