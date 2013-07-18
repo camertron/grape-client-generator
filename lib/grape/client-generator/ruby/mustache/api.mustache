@@ -61,7 +61,7 @@ module {{namespace}}
       path = path_params.inject(path) do |final_path, param|
         final_path.gsub(":#{param}") do |match|
           # only remove from params if gsub finds a match
-          params.delete(param)
+          params.delete(param.to_s) || params.delete(param.to_sym)
         end
       end
 

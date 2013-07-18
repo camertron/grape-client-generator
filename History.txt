@@ -1,3 +1,7 @@
+== 1.0.2
+
+* Agnostically replace path params (i.e. try both string/symbol as hash key).
+
 == 1.0.1
 
 * Handle real Grape paths, including namespaces.
