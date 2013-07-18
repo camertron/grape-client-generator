@@ -58,12 +58,19 @@ module Grape
             :default_format => generator.response_types.first,
             :endpoints => generator.map_endpoints do |endpoint|
               {
-                :path => endpoint.options[:path].first.to_s,
+                :path => route_options_for(endpoint)[:path],
+                :path_params => route_options_for(endpoint)[:params].keys,
                 :name => endpoint.settings[:name],  # expected to be set by all endpoints
                 :verb => endpoint.options[:method].first.downcase
               }
             end
           }
+        end
+
+        private
+
+        def route_options_for(endpoint)
+          endpoint.routes.first.instance_variable_get(:'@options')
         end
       end
 

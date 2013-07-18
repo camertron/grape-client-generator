@@ -10,6 +10,11 @@ end
 
 class DummyEndpoints < Grape::API
 
+  version '1', {
+    :using => :path,
+    :cascade => false
+  }
+
   desc "I'm a little teapot."
 
   set(:name, "kirk")

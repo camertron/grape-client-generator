@@ -18,20 +18,20 @@ module {{namespace}}
 
   {{#endpoints}}
     def {{name}}(params = {})
-      make_request("{{verb}}", "{{path}}", params)
+      make_request("{{verb}}", "{{path}}", params, {{{path_params.inspect}}})
     end
 
   {{/endpoints}}
     private
 
-    def make_request(verb, path, params)
+    def make_request(verb, path, params, path_params)
       parse_response(
         case verb
           when "post"
-            url = make_post_url(path)
+            url = make_post_url(path, params, path_params)
             post(url, params)
           when "get"
-            url = make_get_url(path, params)
+            url = make_get_url(path, params, path_params)
             get(url)
           else
             raise "Unsupported HTTP verb."
@@ -57,12 +57,26 @@ module {{namespace}}
       end).join("&")
     end
 
-    def make_get_url(path, params)
-      File.join(base_url, version, "#{path}.#{format}", "?#{make_param_string(params)}")
+    def interpolate_path_params(path, params, path_params)
+      path = path_params.inject(path) do |final_path, param|
+        final_path.gsub(":#{param}") do |match|
+          # only remove from params if gsub finds a match
+          params.delete(param)
+        end
+      end
+
+      path = path.gsub("(.:format)", ".#{format}").gsub(":version", version)
+      [path, params]
     end
 
-    def make_post_url(path)
-      File.join(base_url, version, "#{path}.#{format}")
+    def make_get_url(path, params, path_params)
+      path, params = interpolate_path_params(path, params, path_params)
+      File.join(base_url, path, "?#{make_param_string(params)}")
+    end
+
+    def make_post_url(path, params, path_params)
+      path, params = interpolate_path_params(path, params, path_params)
+      File.join(base_url, path)
     end
 
     def post(url, params)
