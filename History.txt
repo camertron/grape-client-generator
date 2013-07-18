@@ -1,3 +1,7 @@
+== 1.0.1
+
+* Handle real Grape paths, including namespaces.
+
 == 1.0.0
 
 * Birthday!
