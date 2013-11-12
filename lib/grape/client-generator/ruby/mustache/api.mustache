@@ -79,18 +79,35 @@ module {{namespace}}
       File.join(base_url, path)
     end
 
+    def http_client(uri)
+      Net::HTTP.start(uri.host, uri.port) do |http|
+        yield http
+      end
+    end
+
     def post(url, params)
-      uri = URI.parse(url)
-      http = Net::HTTP.new(uri.host, uri.port)
-      request = Net::HTTP::Post.new(uri.path)
-      request.body = make_param_string(params)
-      resp = http.request(request)
-      resp.body
+      body = ""
+      data = make_param_string(params)
+      http_client(URI.parse(url)) do |http|
+        http.request_post(url, data) do |response|
+          response.read_body do |segment|
+            body << segment
+          end
+        end
+      end
+      body
     end
 
     def get(url)
-      resp = Net::HTTP.get_response(URI.parse(url))
-      resp.body
+      body = ""
+      http_client(URI.parse(url)) do |http|
+        http.request_get(url) do |response|
+          response.read_body do |segment|
+            body << segment
+          end
+        end
+      end
+      body
     end
 
   end
