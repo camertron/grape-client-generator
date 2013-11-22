@@ -80,7 +80,7 @@ module {{namespace}}
     end
 
     def post(url, params)
-      uri = URI.parse(url)
+      uri = parse_uri(url)
       http = Net::HTTP.new(uri.host, uri.port)
       request = Net::HTTP::Post.new(uri.path)
       request.body = make_param_string(params)
@@ -89,8 +89,18 @@ module {{namespace}}
     end
 
     def get(url)
-      resp = Net::HTTP.get_response(URI.parse(url))
+      resp = Net::HTTP.get_response(parse_uri(url))
       resp.body
+    end
+
+    # hack to handle bug in URI.parse, which doesn't allow subdomains to contain underscores
+    def parse_uri(url = nil)
+      URI.parse(url)
+    rescue URI::InvalidURIError
+      host = url.match(".+\:\/\/([^\/]+)")[1]
+      uri = URI.parse(url.sub(host, 'dummy-host'))
+      uri.instance_variable_set('@host', host)
+      uri
     end
 
   end
