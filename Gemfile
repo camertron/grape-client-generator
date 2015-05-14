@@ -6,7 +6,7 @@ group :development, :test do
   gem 'rake'
   gem 'pry'
   gem 'pry-nav'
-  gem 'grape'
+  gem 'grape', '~> 0.11.0'
 end
 
 group :test do

@@ -57,10 +57,12 @@ module Grape
             :default_version => generator.default_version,
             :default_format => generator.response_types.first,
             :endpoints => generator.map_endpoints do |endpoint|
+              api_name = route_options_for(endpoint)[:named]
+              raise '*** ERROR: API name is required! ***' unless api_name
               {
                 :path => route_options_for(endpoint)[:path],
                 :path_params => route_options_for(endpoint)[:params].keys,
-                :name => endpoint.settings[:name],  # expected to be set by all endpoints
+                :name => api_name,
                 :verb => endpoint.options[:method].first.downcase
               }
             end
