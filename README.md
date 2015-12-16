@@ -28,7 +28,7 @@ class DummyEndpoints < Grape::API
 
   desc "I'm a little teapot."
 
-  set(:name, "dummy")
+  named "dummy"
 
   get :dummy do
     puts "hello"
@@ -37,7 +37,7 @@ class DummyEndpoints < Grape::API
 end
 ```
 
-**NOTE**: Pay special attention to the call to `set(:name, ...)` above.  grape-client-generator expects all endpoints to give themselves a name that will be used as the method name in the generated class.
+**NOTE**: Pay special attention to the call to `named` above.  grape-client-generator expects all endpoints to give themselves a name that will be used as the method name in the generated class.
 
 grape-client-generator lets you automatically generate a (Ruby) consumer for this API that could potentially be packaged up into a gem.  The `RubyGenerator` class takes in an array of `Grape::API`s to process as well as a number of additional options like `:namespace`, `:class_name`, `:default_version`, and `:response_types`.  Here's an example:
 
